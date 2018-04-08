@@ -1,6 +1,6 @@
 # TaskManager
 
- Simle TODO list app which is connected with Google API and firebase.
+TODO list Android App with Firebase and Google API
 # Features
 1) Users cana add the task with title and set the due date and due time.
 2) Users also has option to mark the task as completed or  can delete a task by sliding in a list.
