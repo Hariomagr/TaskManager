@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:alpha="255"
+    android:background="@color/colorPrimaryDark"
+    tools:context="com.example.dellpc.taskmanagers.MainActivity">
+
+    <com.shobhitpuri.custombuttons.GoogleSignInButton
+        android:id="@+id/google"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="@string/google_sign_in"
+        android:textSize="20dp"
+        app:isDarkTheme="true" />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/AVLoadingIndicatorView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/google"
+        android:layout_toEndOf="@+id/ind1"
+        android:indeterminate="true"
+        app:indicatorName="BallPulseIndicator" />
+
+    <com.wang.avi.AVLoadingIndicatorView
+        android:id="@+id/ind1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/google"
+        android:layout_below="@+id/google"
+        android:layout_marginStart="52dp"
+        android:focusable="auto"
+        android:indeterminate="true"
+        app:indicatorName="PacmanIndicator" />
+
+
+</RelativeLayout>
