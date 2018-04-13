@@ -5,13 +5,20 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Handler;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -26,7 +33,8 @@ import java.util.Calendar;
 
 public class edit extends AppCompatActivity implements View.OnClickListener {
     String title,time,date,delete,status,mail;
-    Button btnDatePicker, btnTimePicker,save;
+    ImageButton btnDatePicker, btnTimePicker;
+    Button save;
     TextView txtDate, txtTime;
     EditText titlee;
     private int mYear, mMonth, mDay, mHour, mMinute;
@@ -34,9 +42,9 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-        titlee=(EditText)findViewById(R.id.ttitlee);
-        btnDatePicker=(Button)findViewById(R.id.bbtn_date);
-        btnTimePicker=(Button)findViewById(R.id.bbtn_time);
+        titlee=(EditText)findViewById(R.id.input_ttitlee);
+        btnDatePicker=(ImageButton) findViewById(R.id.bbtn_date);
+        btnTimePicker=(ImageButton) findViewById(R.id.bbtn_time);
         save=(Button)findViewById(R.id.ssave);
         txtDate=(TextView) findViewById(R.id.iin_date);
         txtTime=(TextView) findViewById(R.id.iin_time);
@@ -51,6 +59,14 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
         titlee.setText(title);
         txtDate.setText(date);
         txtTime.setText(time);
+        titlee.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +176,10 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
                     }, mHour, mMinute, false);
             timePickerDialog.show();
         }
+    }
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(edit.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
     @Override
     public void onBackPressed() {

@@ -47,22 +47,33 @@
     </LinearLayout>
 
     <!-- Top View, Row ItemView of RecyclerView -->
-    <LinearLayout
+    <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:selectableItemBackground"
-        android:elevation="5dp"
-        android:orientation="vertical"
-        android:padding="10dp">
+        android:layout_height="90dp"
+        android:layout_marginTop="20dp"
+        android:elevation="@dimen/cardview_default_radius"
+        android:paddingTop="20dp"
+        app:cardBackgroundColor="@color/cardview_dark_background"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="2dp">
 
-        <TextView
-            android:id="@+id/tvName"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:textColor="@android:color/black"
-            android:textSize="20dp" />
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_blue_light"
+            android:elevation="3dp"
+            android:orientation="vertical"
+            android:padding="12dp">
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:textColor="@android:color/black"
+                android:textSize="20dp" />
 
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
 </com.daimajia.swipe.SwipeLayout>

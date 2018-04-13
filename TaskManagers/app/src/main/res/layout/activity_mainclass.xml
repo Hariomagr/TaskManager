@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/colorPrimary">
 
 
     <android.support.design.widget.AppBarLayout
@@ -24,16 +25,16 @@
     android:id="@+id/swipee">
 
 
-    <android.support.v7.widget.RecyclerView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"
-        android:theme="@style/Theme.AppCompat.Light"
-        android:background="@color/button_material_light"
         android:layout_height="0dp"
         android:layout_margin="5dp"
         android:layout_weight="1"
-        android:scrollbars="vertical" />
+        android:background="@color/colorPrimary"
+        android:paddingTop="5dp"
+        android:scrollbars="vertical"
+        android:theme="@style/Theme.AppCompat.Light" />
 
 
 </android.support.v4.widget.SwipeRefreshLayout>

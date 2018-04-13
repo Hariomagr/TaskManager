@@ -15,13 +15,20 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -42,9 +49,11 @@ import java.util.Date;
 import static android.app.DatePickerDialog.*;
 
 public class add extends AppCompatActivity implements View.OnClickListener {
-    Button btnDatePicker, btnTimePicker,save;
+    ImageButton btnDatePicker, btnTimePicker;
+    Button save;
     TextView txtDate, txtTime;
     EditText titlee;
+    private TextInputLayout inputLayouttit;
     String secc;
     private int mYear, mMonth, mDay, mHour, mMinute;
     FirebaseAuth mauth;
@@ -54,9 +63,11 @@ public class add extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add);
-        titlee=(EditText)findViewById(R.id.titlee);
-        btnDatePicker=(Button)findViewById(R.id.btn_date);
-        btnTimePicker=(Button)findViewById(R.id.btn_time);
+        titlee=(EditText)findViewById(R.id.input_titlee);
+        inputLayouttit = findViewById(R.id.input_layout_titlee);
+        btnDatePicker=(ImageButton) findViewById(R.id.btn_date);
+        btnTimePicker=(ImageButton) findViewById(R.id.btn_time);
+        titlee.addTextChangedListener(new MyTextWatcher(titlee));
         save=(Button)findViewById(R.id.save);
         txtDate=(TextView) findViewById(R.id.in_date);
         txtTime=(TextView) findViewById(R.id.in_time);
@@ -78,9 +89,20 @@ public class add extends AppCompatActivity implements View.OnClickListener {
         databaseReference = FirebaseDatabase.getInstance().getReference("TODO");
         final FirebaseUser user = mauth.getCurrentUser();
         final String email = user.getEmail();
+        titlee.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!validatetit()) {
+                    return;
+                }
                 if (titlee.getText().toString().equals("") || txtDate.getText().toString().equals("") || txtTime.getText().toString().equals("")) {
                     Toast.makeText(getApplicationContext(), "Fill all fields", Toast.LENGTH_SHORT).show();
                 }
@@ -219,6 +241,51 @@ public class add extends AppCompatActivity implements View.OnClickListener {
                     }, mHour, mMinute, false);
             timePickerDialog.show();
         }
+    }
+    private boolean validatetit() {
+        String email = titlee.getText().toString().trim();
+
+        if (email.isEmpty()) {
+            inputLayouttit.setError("Enter Title");
+            requestFocus(titlee);
+            return false;
+        } else {
+            inputLayouttit.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+    }
+
+    private class MyTextWatcher implements TextWatcher {
+
+        private View view;
+
+        private MyTextWatcher(View view) {
+            this.view = view;
+        }
+
+        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+        }
+
+        public void afterTextChanged(Editable editable) {
+            switch (view.getId()) {
+                case R.id.input_titlee:
+                    validatetit();
+                    break;
+            }
+        }
+    }
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(add.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
     @Override
     public void onBackPressed() {
