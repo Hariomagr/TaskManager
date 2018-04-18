@@ -38,7 +38,7 @@ public class AlarmReciever extends BroadcastReceiver
         b.setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setWhen(System.currentTimeMillis())
-                .setSmallIcon(R.drawable.ic_launcher_background)
+                .setSmallIcon(R.drawable.ic_add_alert_black_24dp)
                 .setTicker("Hearty365")
                 .setContentTitle("Reminder")
                 .setContentText("Due date for task ")

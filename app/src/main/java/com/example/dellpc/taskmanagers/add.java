@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.SystemClock;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,21 +41,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import static android.app.DatePickerDialog.*;
+import static com.example.dellpc.taskmanagers.R.string.valida;
 
 public class add extends AppCompatActivity implements View.OnClickListener {
-    ImageButton btnDatePicker, btnTimePicker;
-    Button save;
-    TextView txtDate, txtTime;
+    FloatingActionButton save;
+    EditText txtDate, txtTime;
     EditText titlee;
     private TextInputLayout inputLayouttit;
     String secc;
+    String finaltime;
     private int mYear, mMonth, mDay, mHour, mMinute;
     FirebaseAuth mauth;
     String dat;
@@ -65,20 +69,18 @@ public class add extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.activity_add);
         titlee=(EditText)findViewById(R.id.input_titlee);
         inputLayouttit = findViewById(R.id.input_layout_titlee);
-        btnDatePicker=(ImageButton) findViewById(R.id.btn_date);
-        btnTimePicker=(ImageButton) findViewById(R.id.btn_time);
         titlee.addTextChangedListener(new MyTextWatcher(titlee));
-        save=(Button)findViewById(R.id.save);
-        txtDate=(TextView) findViewById(R.id.in_date);
-        txtTime=(TextView) findViewById(R.id.in_time);
-        btnDatePicker.setOnClickListener(this);
-        btnTimePicker.setOnClickListener(this);
+        save=(FloatingActionButton) findViewById(R.id.save);
+        txtDate=(EditText) findViewById(R.id.in_date);
+        txtTime=(EditText) findViewById(R.id.in_time);
+        txtDate.setOnClickListener(this);
+        txtTime.setOnClickListener(this);
         Date c = Calendar.getInstance().getTime();
         Calendar rightNow = Calendar.getInstance();
         Integer t=rightNow.get(Calendar.DATE);
         Integer tt=rightNow.get(Calendar.MONTH)+1;
         Integer ttt= rightNow.get(Calendar.YEAR);
-        final String datee=t+"-"+tt+"-"+ttt;
+        final String datee=t+"/"+tt+"/"+ttt;
         int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
         int currentmin = rightNow.get(Calendar.MINUTE);
         final String mil=Integer.toString(currentHour*3600+currentmin*60);
@@ -104,11 +106,11 @@ public class add extends AppCompatActivity implements View.OnClickListener {
                     return;
                 }
                 if (titlee.getText().toString().equals("") || txtDate.getText().toString().equals("") || txtTime.getText().toString().equals("")) {
-                    Toast.makeText(getApplicationContext(), "Fill all fields", Toast.LENGTH_SHORT).show();
+                    StyleableToast.makeText(getApplicationContext(), "Fill all fields!", R.style.fillall).show();
                 }
                 else if(dat.equals(datee)){
                     if(Integer.parseInt(mil.toString())>Integer.parseInt(secc.toString())){
-                        Toast.makeText(getApplicationContext(), "Time already passed", Toast.LENGTH_SHORT).show();
+                        StyleableToast.makeText(getApplicationContext(), "Time passed!", R.style.passed).show();
                     }
                     else{
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(add.this);
@@ -126,13 +128,13 @@ public class add extends AppCompatActivity implements View.OnClickListener {
                                         peg.setMail(email);
                                         peg.setStatus("0");
                                         peg.setDelete("0");
-                                        peg.setTime(txtTime.getText().toString());
+                                        peg.setTime(finaltime.toString());
                                         databaseReference.child(idd).setValue(peg);
                                         new Handler().postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
                                                 Intent i = new Intent(add.this, Mainclass.class);
-                                                Toast.makeText(getApplicationContext(),"Task Added",Toast.LENGTH_SHORT).show();
+                                                StyleableToast.makeText(getApplicationContext(), "Task Added!", R.style.mytoast).show();
                                                 startActivity(i);
                                             }
                                         }, 300);
@@ -167,13 +169,13 @@ public class add extends AppCompatActivity implements View.OnClickListener {
                                     peg.setMail(email);
                                     peg.setStatus("0");
                                     peg.setDelete("0");
-                                    peg.setTime(txtTime.getText().toString());
+                                    peg.setTime(finaltime);
                                     databaseReference.child(idd).setValue(peg);
                                     new Handler().postDelayed(new Runnable() {
                                         @Override
                                         public void run() {
                                             Intent i = new Intent(add.this, Mainclass.class);
-                                            Toast.makeText(getApplicationContext(),"Task Added",Toast.LENGTH_SHORT).show();
+                                            StyleableToast.makeText(getApplicationContext(), "Task Added!", R.style.mytoast).show();
                                             startActivity(i);
                                         }
                                     }, 300);
@@ -198,7 +200,7 @@ public class add extends AppCompatActivity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
 
-        if (v == btnDatePicker) {
+        if (v == txtDate) {
 
             // Get Current Date
             final Calendar c = Calendar.getInstance();
@@ -213,15 +215,15 @@ public class add extends AppCompatActivity implements View.OnClickListener {
                         @Override
                         public void onDateSet(DatePicker view, int year,
                                               int monthOfYear, int dayOfMonth) {
-                            dat=dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
-                            txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                            dat=dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
+                            txtDate.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
 
                         }
                     }, mYear, mMonth, mDay);
             datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
             datePickerDialog.show();
         }
-        if (v == btnTimePicker) {
+        if (v == txtTime) {
 
             // Get Current Time
             final Calendar c = Calendar.getInstance();
@@ -236,7 +238,17 @@ public class add extends AppCompatActivity implements View.OnClickListener {
                         public void onTimeSet(TimePicker view, int hourOfDay,
                                               int minute) {
                             secc=Integer.toString(hourOfDay*3600+minute*60);
-                            txtTime.setText(hourOfDay + ":" + minute);
+
+                            String time24=hourOfDay+":"+minute;
+                            finaltime=hourOfDay+":"+minute;
+                            SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+                            SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+                            try {
+                                Date _24HourDt = _24HourSDF.parse(time24);
+                               txtTime.setText( _12HourSDF.format(_24HourDt).toString());
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }, mHour, mMinute, false);
             timePickerDialog.show();
@@ -246,7 +258,7 @@ public class add extends AppCompatActivity implements View.OnClickListener {
         String email = titlee.getText().toString().trim();
 
         if (email.isEmpty()) {
-            inputLayouttit.setError("Enter Title");
+            inputLayouttit.setError(String.format(getString(R.string.valida)));
             requestFocus(titlee);
             return false;
         } else {

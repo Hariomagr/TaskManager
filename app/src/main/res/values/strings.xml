@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TaskManagers</string>
     <string name="tittt">Title</string>
+    <string name="valida">Enter title</string>
 </resources>

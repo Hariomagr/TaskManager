@@ -116,31 +116,7 @@ public class MainActivity extends AppCompatActivity {
             if (result.isSuccess()) {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
-                final RelativeLayout rel = (RelativeLayout)findViewById(R.id.rel);
-                while(user==null) {
-                    getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                    rel.getBackground().setAlpha(50);
-                    ind1.show();
-                    ind2.show();
-                    google.setAlpha(0);
-                    user = mAuth.getCurrentUser();
-                }
 
-                // Google Sign In was successful, authenticate with Firebase
-
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        Intent i = new Intent(MainActivity.this,Mainclass.class);
-                        i.putExtra("x",x);
-                        startActivity(i);
-                        rel.getBackground().setAlpha(255);
-                        finish();
-                    }
-                },3000);
             }
 
 
@@ -168,7 +144,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct){
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        google.setAlpha(0);
+        user = mAuth.getCurrentUser();
+        ind1.show();
+        ind2.show();
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -179,7 +159,17 @@ public class MainActivity extends AppCompatActivity {
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
-                        if (!task.isSuccessful()) {
+                        if (task.isSuccessful()) {
+                            ind1.hide();
+                            ind2.hide();
+                            Intent i = new Intent(MainActivity.this,Mainclass.class);
+                            i.putExtra("x",x);
+                            startActivity(i);
+                        }
+                        else{
+                            ind2.hide();
+                            ind1.hide();
+                            Toast.makeText(getApplicationContext(),"Login Failed",Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

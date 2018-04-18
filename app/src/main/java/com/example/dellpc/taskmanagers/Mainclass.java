@@ -43,12 +43,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
+
+public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
     private FirebaseAuth mauth;
     private GoogleApiClient mGoogleApiClient;
     DatabaseReference databaseReference;
@@ -56,7 +59,7 @@ public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.O
     private String mail="";
     private ArrayList<StudentModel> mDataSet;
     ProgressDialog progressDialog;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private WaveSwipeRefreshLayout swipeRefreshLayout;
     private String s="0";
     final private static ArrayList<PendingIntent> intentArray = new ArrayList<PendingIntent>();
     @Override
@@ -67,7 +70,7 @@ public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.O
         progressDialog.setMessage("Its loading....");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipee);
+        swipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.swipee);
         swipeRefreshLayout.setOnRefreshListener(this);
         mauth = FirebaseAuth.getInstance();
         final FirebaseUser user = mauth.getCurrentUser();
@@ -103,7 +106,7 @@ public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.O
                             long diff = 0;
                             String datt = dat.get(i);
                             String timm = tim.get(i);
-                            String[] date = datt.split("-");
+                            String[] date = datt.split("/");
                             String mo = date[1];
                             String da = date[0];
                             String yr = date[2];
@@ -179,8 +182,8 @@ public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.O
                             }
                         }
                         if(mDataSet.isEmpty()){
-                            Toast.makeText(getApplicationContext(),"No record",Toast.LENGTH_SHORT).show();
-                            mRecyclerView.setVisibility(View.VISIBLE);
+                            StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
+                            mRecyclerView.setVisibility(View.INVISIBLE);
                         }else{
                             mRecyclerView.setVisibility(View.VISIBLE);
                         }
@@ -224,6 +227,42 @@ public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.O
             Intent i = new Intent(Mainclass.this,add.class);
             startActivity(i);
         }
+        else if(id==R.id.selectall){
+            s="0";
+            progressDialog.show();
+            FirebaseDatabase.getInstance().getReference("TODO").orderByChild("mail").equalTo(mail)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            mDataSet.clear();
+                            progressDialog.dismiss();
+                            for(DataSnapshot snapshot:dataSnapshot.getChildren()){
+                                String date=snapshot.child("date").getValue(String.class);
+                                String maiil=snapshot.child("mail").getValue(String.class);
+                                String status=snapshot.child("status").getValue(String.class);
+                                String time=snapshot.child("time").getValue(String.class);
+                                String title=snapshot.child("title").getValue(String.class);
+                                String delete=snapshot.child("delete").getValue(String.class);
+                                if(delete.equals("0")){
+                                    mDataSet.add(new StudentModel(maiil,status,date,time,title,delete));
+                                }
+                            }
+                            if(mDataSet.isEmpty()){
+                                mRecyclerView.setVisibility(View.INVISIBLE);
+                                StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
+                            }else{
+                                mRecyclerView.setVisibility(View.VISIBLE);
+                            }
+                            SwipeRecyclerViewAdapter mAdapter = new SwipeRecyclerViewAdapter(Mainclass.this,mDataSet);
+                            ((SwipeRecyclerViewAdapter) mAdapter).setMode(Attributes.Mode.Single);
+                            mRecyclerView.setAdapter(mAdapter);
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+        }
         else if(id == R.id.filter){
             AlertDialog.Builder builder1 = new AlertDialog.Builder(Mainclass.this);
             builder1.setMessage("Select Type");
@@ -252,8 +291,8 @@ public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.O
                                                 }
                                             }
                                             if(mDataSet.isEmpty()){
-                                                mRecyclerView.setVisibility(View.VISIBLE);
-                                                Toast.makeText(getApplicationContext(),"No record",Toast.LENGTH_SHORT).show();
+                                                mRecyclerView.setVisibility(View.INVISIBLE);
+                                                StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
                                             }else{
                                                 mRecyclerView.setVisibility(View.VISIBLE);
                                             }
@@ -294,7 +333,7 @@ public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.O
                                             }
                                             if(mDataSet.isEmpty()){
                                                 mRecyclerView.setVisibility(View.VISIBLE);
-                                                Toast.makeText(getApplicationContext(),"No record",Toast.LENGTH_SHORT).show();
+                                                StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
                                             }else{
                                                 mRecyclerView.setVisibility(View.VISIBLE);
                                             }
@@ -402,8 +441,8 @@ public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.O
                             }
                         }
                         if(mDataSet.isEmpty()){
-                            mRecyclerView.setVisibility(View.VISIBLE);
-                            Toast.makeText(getApplicationContext(),"No record",Toast.LENGTH_SHORT).show();
+                            mRecyclerView.setVisibility(View.INVISIBLE);
+                            StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
                         }else{
                             mRecyclerView.setVisibility(View.VISIBLE);
                         }

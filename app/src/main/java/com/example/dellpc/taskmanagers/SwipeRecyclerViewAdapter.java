@@ -21,6 +21,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.util.ArrayList;
 
@@ -47,10 +48,10 @@ public class SwipeRecyclerViewAdapter extends RecyclerSwipeAdapter<SwipeRecycler
         sts=item.getStatus();
         viewHolder.tvName.setText(item.getTitle());
         if(item.getStatus().equals("0")){
-            viewHolder.btnLocation.setImageResource(R.drawable.btn_rating_star_off_normal);
+            viewHolder.btnLocation.setImageResource(R.drawable.ic_sentiment_very_dissatisfied_black_24dp);
         }
         else{
-            viewHolder.btnLocation.setImageResource(R.drawable.btn_rating_star_on_normal);
+            viewHolder.btnLocation.setImageResource(R.drawable.ic_sentiment_very_satisfied_black_24dp);
         }
 
         viewHolder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
@@ -128,14 +129,14 @@ public class SwipeRecyclerViewAdapter extends RecyclerSwipeAdapter<SwipeRecycler
                                     if(status.equals(item.getStatus()) && date.equals(item.getDate()) && delete.equals(item.getDelete()) && time.equals(item.getTime()) && title.equals(item.getTitle())){
                                         if(status.equals("0")){
                                             item.setStatus("1");
-                                            Toast.makeText(mContext,"Task added in Completed",Toast.LENGTH_SHORT).show();
-                                            viewHolder.btnLocation.setImageResource(R.drawable.btn_rating_star_on_normal);
+                                            StyleableToast.makeText(mContext, "Task added in Completed!", R.style.complete).show();
+                                            viewHolder.btnLocation.setImageResource(R.drawable.ic_sentiment_very_satisfied_black_24dp);
                                             sub.child(key).child("status").setValue("1");
 
                                         } else if (status.equals("1")) {
                                             item.setStatus("0");
-                                            Toast.makeText(mContext,"Task removed from Completed",Toast.LENGTH_SHORT).show();
-                                            viewHolder.btnLocation.setImageResource(R.drawable.btn_rating_star_off_normal);
+                                            StyleableToast.makeText(mContext, "Task removed from Completed!", R.style.pending).show();
+                                            viewHolder.btnLocation.setImageResource(R.drawable.ic_sentiment_very_dissatisfied_black_24dp);
                                             sub.child(key).child("status").setValue("0");
                                         }
                                     }
@@ -177,7 +178,7 @@ public class SwipeRecyclerViewAdapter extends RecyclerSwipeAdapter<SwipeRecycler
                                                     String key =snapshot.getRef().getKey();
                                                     DatabaseReference sub = FirebaseDatabase.getInstance().getReference("TODO");
                                                     if(status.equals(item.getStatus()) && date.equals(item.getDate()) && delete.equals(item.getDelete()) && time.equals(item.getTime()) && title.equals(item.getTitle())){
-                                                        Toast.makeText(mContext,"Task Deleted",Toast.LENGTH_SHORT).show();
+                                                        StyleableToast.makeText(mContext, "Task Deleted!", R.style.delete).show();
                                                         sub.child(key).child("delete").setValue("1");
                                                     }
                                                 }
@@ -225,7 +226,7 @@ public class SwipeRecyclerViewAdapter extends RecyclerSwipeAdapter<SwipeRecycler
     public static class SimpleViewHolder extends RecyclerView.ViewHolder{
         public SwipeLayout swipeLayout;
         public TextView tvName;
-        public TextView tvDelete;
+        public ImageButton tvDelete;
         public TextView tvEdit;
         public TextView tvShare;
         public ImageButton btnLocation;
@@ -234,7 +235,7 @@ public class SwipeRecyclerViewAdapter extends RecyclerSwipeAdapter<SwipeRecycler
 
             swipeLayout = (SwipeLayout) itemView.findViewById(R.id.swipe);
             tvName = (TextView) itemView.findViewById(R.id.tvName);
-            tvDelete = (TextView) itemView.findViewById(R.id.tvDelete);
+            tvDelete = (ImageButton) itemView.findViewById(R.id.tvDelete);
             btnLocation = (ImageButton) itemView.findViewById(R.id.btnLocation);
         }
     }

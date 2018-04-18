@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,37 +29,61 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class edit extends AppCompatActivity implements View.OnClickListener {
     String title,time,date,delete,status,mail;
-    ImageButton btnDatePicker, btnTimePicker;
-    Button save;
+    FloatingActionButton save;
     TextView txtDate, txtTime;
     EditText titlee;
+    String secc;
+    String finaltime;
     private int mYear, mMonth, mDay, mHour, mMinute;
+    String dat;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
-        titlee=(EditText)findViewById(R.id.input_ttitlee);
-        btnDatePicker=(ImageButton) findViewById(R.id.bbtn_date);
-        btnTimePicker=(ImageButton) findViewById(R.id.bbtn_time);
-        save=(Button)findViewById(R.id.ssave);
-        txtDate=(TextView) findViewById(R.id.iin_date);
-        txtTime=(TextView) findViewById(R.id.iin_time);
-        btnDatePicker.setOnClickListener(this);
-        btnTimePicker.setOnClickListener(this);
-        title=getIntent().getExtras().getString("title");
-        time=getIntent().getExtras().getString("time");
-        date=getIntent().getExtras().getString("date");
-        delete=getIntent().getExtras().getString("delete");
-        status=getIntent().getExtras().getString("status");
-        mail=getIntent().getExtras().getString("mail");
+        titlee = (EditText) findViewById(R.id.input_ttitlee);
+        save = (FloatingActionButton) findViewById(R.id.ssave);
+        txtDate = (TextView) findViewById(R.id.iin_date);
+        txtTime = (TextView) findViewById(R.id.iin_time);
+        txtDate.setOnClickListener(this);
+        txtTime.setOnClickListener(this);
+        title = getIntent().getExtras().getString("title");
+        time = getIntent().getExtras().getString("time");
+        SimpleDateFormat _244HourSDF = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat _122HourSDF = new SimpleDateFormat("hh:mm a");
+        try {
+            Date _24HourDt = _244HourSDF.parse(time);
+            txtTime.setText( _122HourSDF.format(_24HourDt).toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        date = getIntent().getExtras().getString("date");
+        delete = getIntent().getExtras().getString("delete");
+        status = getIntent().getExtras().getString("status");
+        mail = getIntent().getExtras().getString("mail");
+        Date c = Calendar.getInstance().getTime();
+        Calendar rightNow = Calendar.getInstance();
+        Integer t=rightNow.get(Calendar.DATE);
+        Integer tt=rightNow.get(Calendar.MONTH)+1;
+        Integer ttt= rightNow.get(Calendar.YEAR);
+        final String datee=t+"/"+tt+"/"+ttt;
+        int currentHour = rightNow.get(Calendar.HOUR_OF_DAY);
+        int currentmin = rightNow.get(Calendar.MINUTE);
+        final String mil=Integer.toString(currentHour*3600+currentmin*60);
         titlee.setText(title);
         txtDate.setText(date);
-        txtTime.setText(time);
+        final String[] timee = time.split(":");
+        String hr = timee[0];
+        String mi = timee[1];
+        secc=Integer.toString(Integer.parseInt((hr.toString()))*3600+Integer.parseInt(mi.toString())*60);
         titlee.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -71,9 +96,71 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 if (titlee.getText().toString().equals("") || txtDate.getText().toString().equals("") || txtTime.getText().toString().equals("")) {
-                    Toast.makeText(getApplicationContext(), "Fill all fields", Toast.LENGTH_SHORT).show();
+                    StyleableToast.makeText(getApplicationContext(), "Fill all fields!", R.style.fillall).show();
                 }
-                else {
+                else if (txtDate.getText().toString().equals(datee)) {
+                    if (Integer.parseInt(mil.toString()) > Integer.parseInt(secc.toString())) {
+                        StyleableToast.makeText(getApplicationContext(), "Time passed!", R.style.passed).show();
+                    }
+                    else {
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(edit.this);
+                        builder1.setMessage("Edit this task");
+                        builder1.setCancelable(true);
+                        builder1.setPositiveButton(
+                                "Confirm",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        FirebaseDatabase.getInstance().getReference("TODO").orderByChild("mail").equalTo(mail)
+                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                                            String statuss = snapshot.child("status").getValue(String.class);
+                                                            String datee = snapshot.child("date").getValue(String.class);
+                                                            String deletee = snapshot.child("delete").getValue(String.class);
+                                                            String timee = snapshot.child("time").getValue(String.class);
+                                                            String titleee = snapshot.child("title").getValue(String.class);
+                                                            String key = snapshot.getRef().getKey();
+                                                            DatabaseReference sub = FirebaseDatabase.getInstance().getReference("TODO");
+                                                            if (statuss.equals(status) && datee.equals(date) && deletee.equals(delete) && timee.equals(time) && titleee.equals(title)) {
+                                                                sub.child(key).child("title").setValue(titlee.getText().toString());
+                                                                sub.child(key).child("date").setValue(txtDate.getText().toString());
+                                                                sub.child(key).child("time").setValue(finaltime.toString());
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Intent i = new Intent(edit.this, Mainclass.class);
+                                                StyleableToast.makeText(getApplicationContext(), "Task Edited!", R.style.mytoast).show();
+                                                startActivity(i);
+                                            }
+                                        }, 300);
+
+
+                                    }
+                                });
+
+                        builder1.setNegativeButton(
+                                "Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+
+                    }
+                } else {
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(edit.this);
                     builder1.setMessage("Edit this task");
                     builder1.setCancelable(true);
@@ -96,7 +183,7 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
                                                         if (statuss.equals(status) && datee.equals(date) && deletee.equals(delete) && timee.equals(time) && titleee.equals(title)) {
                                                             sub.child(key).child("title").setValue(titlee.getText().toString());
                                                             sub.child(key).child("date").setValue(txtDate.getText().toString());
-                                                            sub.child(key).child("time").setValue(txtTime.getText().toString());
+                                                            sub.child(key).child("time").setValue(finaltime.toString());
                                                         }
                                                     }
                                                 }
@@ -106,9 +193,15 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
 
                                                 }
                                             });
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
                                             Intent i = new Intent(edit.this, Mainclass.class);
-                                            Toast.makeText(getApplicationContext(),"Task edited",Toast.LENGTH_SHORT).show();
+                                            StyleableToast.makeText(getApplicationContext(), "Task Edited!", R.style.mytoast).show();
                                             startActivity(i);
+                                        }
+                                    }, 300);
+
 
                                 }
                             });
@@ -118,14 +211,11 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.cancel();
-                                    Intent i = new Intent(edit.this, Mainclass.class);
-                                   startActivity(i);
                                 }
                             });
 
                     AlertDialog alert11 = builder1.create();
                     alert11.show();
-
                 }
             }
         });
@@ -133,7 +223,7 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (v == btnDatePicker) {
+        if (v == txtDate) {
 
             // Get Current Date
             final Calendar c = Calendar.getInstance();
@@ -148,15 +238,15 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
                         @Override
                         public void onDateSet(DatePicker view, int year,
                                               int monthOfYear, int dayOfMonth) {
-
-                            txtDate.setText(dayOfMonth + "-" + (monthOfYear + 1) + "-" + year);
+                            dat=dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
+                            txtDate.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year);
 
                         }
                     }, mYear, mMonth, mDay);
             datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
             datePickerDialog.show();
         }
-        if (v == btnTimePicker) {
+        if (v == txtTime) {
 
             // Get Current Time
             final Calendar c = Calendar.getInstance();
@@ -170,8 +260,17 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
                         @Override
                         public void onTimeSet(TimePicker view, int hourOfDay,
                                               int minute) {
-
-                            txtTime.setText(hourOfDay + ":" + minute);
+                            secc=Integer.toString(hourOfDay*3600+minute*60);
+                            String time24=hourOfDay+":"+minute;
+                            finaltime=hourOfDay+":"+minute;
+                            SimpleDateFormat _24HourSDF = new SimpleDateFormat("HH:mm");
+                            SimpleDateFormat _12HourSDF = new SimpleDateFormat("hh:mm a");
+                            try {
+                                Date _24HourDt = _24HourSDF.parse(time24);
+                                txtTime.setText( _12HourSDF.format(_24HourDt).toString());
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }, mHour, mMinute, false);
             timePickerDialog.show();
