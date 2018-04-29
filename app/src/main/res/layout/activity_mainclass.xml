@@ -1,46 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/notaskadded"
     android:orientation="vertical">
-
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/colorAccent"
+        android:background="@android:color/holo_red_light"
         android:theme="@style/Theme.AppCompat">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?android:attr/colorAccent"
+            android:background="@android:color/holo_red_light"
             app:popupTheme="@style/Theme.AppCompat.DayNight" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout
+
+    <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipee"
+        android:layout_marginTop="55dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
         <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/my_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_margin="5dp"
             android:layout_weight="1"
-            android:background="?android:attr/colorControlActivated"
+            android:background="#ffffff"
             android:paddingTop="5dp"
             android:scrollbars="vertical"
             android:theme="@style/Theme.AppCompat.Light">
-
         </android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-    </jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout>
-
-
-</LinearLayout>
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:srcCompat="@drawable/empty_view_bg" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="330dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_add_black_24dp"
+        app:backgroundTint="@android:color/holo_red_light"
+        app:fabSize="normal"
+        app:rippleColor="@color/amber" />
+</android.support.design.widget.CoordinatorLayout>

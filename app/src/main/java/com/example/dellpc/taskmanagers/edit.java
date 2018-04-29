@@ -29,7 +29,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -96,11 +95,11 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
             @Override
             public void onClick(View v) {
                 if (titlee.getText().toString().equals("") || txtDate.getText().toString().equals("") || txtTime.getText().toString().equals("")) {
-                    StyleableToast.makeText(getApplicationContext(), "Fill all fields!", R.style.fillall).show();
+                    Toast.makeText(getApplicationContext(),"Fill all fields",Toast.LENGTH_SHORT).show();
                 }
                 else if (txtDate.getText().toString().equals(datee)) {
                     if (Integer.parseInt(mil.toString()) > Integer.parseInt(secc.toString())) {
-                        StyleableToast.makeText(getApplicationContext(), "Time passed!", R.style.passed).show();
+                        Toast.makeText(getApplicationContext(),"Time Passed",Toast.LENGTH_SHORT).show();
                     }
                     else {
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(edit.this);
@@ -139,7 +138,7 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
                                             @Override
                                             public void run() {
                                                 Intent i = new Intent(edit.this, Mainclass.class);
-                                                StyleableToast.makeText(getApplicationContext(), "Task Edited!", R.style.mytoast).show();
+                                                Toast.makeText(getApplicationContext(),"Task Edited!",Toast.LENGTH_SHORT).show();
                                                 startActivity(i);
                                             }
                                         }, 300);
@@ -197,7 +196,7 @@ public class edit extends AppCompatActivity implements View.OnClickListener {
                                         @Override
                                         public void run() {
                                             Intent i = new Intent(edit.this, Mainclass.class);
-                                            StyleableToast.makeText(getApplicationContext(), "Task Edited!", R.style.mytoast).show();
+                                            Toast.makeText(getApplicationContext(),"Task Edited!",Toast.LENGTH_SHORT).show();
                                             startActivity(i);
                                         }
                                     }, 300);

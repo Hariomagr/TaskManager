@@ -5,6 +5,7 @@
         <!-- Customize your theme here. -->
         <item name="android:windowActionBar">false</item>
     </style>
+
     <style name="CustomStyle" parent="Theme.AppCompat.NoActionBar">
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -15,6 +16,11 @@
         <item name="android:colorForeground">@color/colorPrimaryDark</item>
 
     </style>
+
+    <style name="MyAlertDialogStyle"  parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/amber</item>
+    </style>
+
     <style name="FloatingLabelTextAppearance" parent="TextAppearance.AppCompat">
         <item name="android:textColor">@android:color/white</item>
     </style>
@@ -36,95 +42,5 @@
         <item name="android:windowBackground">@drawable/background_dialog2</item>
     </style>
 
-    <style name="mytoast">
-        <item name="textBold">true</item>
-        <item name="textColor">#fff</item>
-        <item name="textSize">14sp</item>
-        <item name="colorBackground">#03A9F4</item>
-        <item name="solidBackground">true</item>
-        <item name="strokeWidth">3dp</item>
-        <item name="strokeColor">#fff</item>
-        <item name="iconStart">@drawable/ic_alarm_add_black_24dp</item>
-        <item name="length">SHORT</item>
-        <item name="gravity">center</item>
-        <item name="radius">5dp</item>
-    </style>
-    <style name="fillall">
-    <item name="textBold">true</item>
-    <item name="textColor">#fff</item>
-    <item name="textSize">14sp</item>
-    <item name="colorBackground">#03A9F4</item>
-    <item name="solidBackground">true</item>
-    <item name="strokeWidth">3dp</item>
-    <item name="strokeColor">#fff</item>
-    <item name="iconStart">@drawable/ic_text_fields_black_24dp</item>
-    <item name="length">SHORT</item>
-    <item name="gravity">center</item>
-    <item name="radius">5dp</item>
-</style>
-    <style name="passed">
-    <item name="textBold">true</item>
-    <item name="textColor">#fff</item>
-    <item name="textSize">14sp</item>
-    <item name="colorBackground">#03A9F4</item>
-    <item name="solidBackground">true</item>
-    <item name="strokeWidth">3dp</item>
-    <item name="strokeColor">#fff</item>
-    <item name="iconStart">@drawable/ic_add_alert_black_24dp</item>
-    <item name="length">SHORT</item>
-    <item name="gravity">center</item>
-    <item name="radius">5dp</item>
-</style>
-    <style name="norecord">
-        <item name="textBold">true</item>
-        <item name="textColor">#fff</item>
-        <item name="textSize">14sp</item>
-        <item name="colorBackground">#03A9F4</item>
-        <item name="solidBackground">true</item>
-        <item name="strokeWidth">3dp</item>
-        <item name="strokeColor">#fff</item>
-        <item name="iconStart">@drawable/ic_report_problem_black_24dp</item>
-        <item name="length">SHORT</item>
-        <item name="gravity">center</item>
-        <item name="radius">5dp</item>
-    </style>
-    <style name="complete">
-        <item name="textBold">true</item>
-        <item name="textColor">#fff</item>
-        <item name="textSize">14sp</item>
-        <item name="colorBackground">#03A9F4</item>
-        <item name="solidBackground">true</item>
-        <item name="strokeWidth">3dp</item>
-        <item name="strokeColor">#fff</item>
-        <item name="iconStart">@drawable/ic_sentiment_very_satisfied_black_24dp</item>
-        <item name="length">SHORT</item>
-        <item name="gravity">center</item>
-        <item name="radius">5dp</item>
-    </style>
-    <style name="pending">
-        <item name="textBold">true</item>
-        <item name="textColor">#fff</item>
-        <item name="textSize">14sp</item>
-        <item name="colorBackground">#03A9F4</item>
-        <item name="solidBackground">true</item>
-        <item name="strokeWidth">3dp</item>
-        <item name="strokeColor">#fff</item>
-        <item name="iconStart">@drawable/ic_sentiment_very_dissatisfied_black_24dp</item>
-        <item name="length">SHORT</item>
-        <item name="gravity">center</item>
-        <item name="radius">5dp</item>
-    </style>
-    <style name="delete">
-        <item name="textBold">true</item>
-        <item name="textColor">#fff</item>
-        <item name="textSize">14sp</item>
-        <item name="colorBackground">#03A9F4</item>
-        <item name="solidBackground">true</item>
-        <item name="strokeWidth">3dp</item>
-        <item name="strokeColor">#fff</item>
-        <item name="iconStart">@drawable/ic_delete_forever_black_24dp</item>
-        <item name="length">SHORT</item>
-        <item name="gravity">center</item>
-        <item name="radius">5dp</item>
-    </style>
+
 </resources>

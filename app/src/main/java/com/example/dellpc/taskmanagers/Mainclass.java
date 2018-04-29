@@ -8,11 +8,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -24,8 +26,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,34 +47,48 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.muddzdev.styleabletoastlibrary.StyleableToast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import jp.co.recruit_lifestyle.android.widget.WaveSwipeRefreshLayout;
 
-public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
+public class Mainclass extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     private FirebaseAuth mauth;
+    ImageView img;
     private GoogleApiClient mGoogleApiClient;
     DatabaseReference databaseReference;
     private RecyclerView mRecyclerView;
     private String mail="";
     private ArrayList<StudentModel> mDataSet;
     ProgressDialog progressDialog;
-    private WaveSwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private String s="0";
+    FloatingActionButton floatingActionButton;
+    MenuItem menu1,menu2,menu3,menu4;
     final private static ArrayList<PendingIntent> intentArray = new ArrayList<PendingIntent>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mainclass);
-        progressDialog = new ProgressDialog(Mainclass.this);
+        floatingActionButton=(FloatingActionButton) findViewById(R.id.floating);
+        floatingActionButton.setVisibility(View.INVISIBLE);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Mainclass.this,add.class);
+                startActivity(i);
+            }
+        });
+        Window window=getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(Color.parseColor("#ffff4444"));
+        img=(ImageView)findViewById(R.id.img);
+        progressDialog = new ProgressDialog(this,R.style.MyAlertDialogStyle);
         progressDialog.setMessage("Its loading....");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        swipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.swipee);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipee);
         swipeRefreshLayout.setOnRefreshListener(this);
         mauth = FirebaseAuth.getInstance();
         final FirebaseUser user = mauth.getCurrentUser();
@@ -169,6 +187,7 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         mDataSet.clear();
+                        floatingActionButton.setVisibility(View.VISIBLE);
                         progressDialog.dismiss();
                         for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                             String date=snapshot.child("date").getValue(String.class);
@@ -182,10 +201,12 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
                             }
                         }
                         if(mDataSet.isEmpty()){
-                            StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
+                            Toast.makeText(getApplicationContext(),"No Record",Toast.LENGTH_SHORT).show();
                             mRecyclerView.setVisibility(View.INVISIBLE);
+                            img.setVisibility(View.VISIBLE);
                         }else{
                             mRecyclerView.setVisibility(View.VISIBLE);
+                            img.setVisibility(View.GONE);
                         }
                         SwipeRecyclerViewAdapter mAdapter = new SwipeRecyclerViewAdapter(Mainclass.this,mDataSet);
                         ((SwipeRecyclerViewAdapter) mAdapter).setMode(Attributes.Mode.Single);
@@ -213,6 +234,9 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.mainclass, menu);
+        menu1=menu.findItem(R.id.filter);
+        menu2=menu.findItem(R.id.selectall);
+        menu2.setVisible(false);
         return true;
     }
     @Override
@@ -222,19 +246,17 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.add) {
-            Intent i = new Intent(Mainclass.this,add.class);
-            startActivity(i);
-        }
-        else if(id==R.id.selectall){
+
+        if(id==R.id.selectall){
             s="0";
-            progressDialog.show();
+           progressDialog.show();
             FirebaseDatabase.getInstance().getReference("TODO").orderByChild("mail").equalTo(mail)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             mDataSet.clear();
+                            menu1.setVisible(true);
+                            menu2.setVisible(false);
                             progressDialog.dismiss();
                             for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                                 String date=snapshot.child("date").getValue(String.class);
@@ -249,9 +271,11 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
                             }
                             if(mDataSet.isEmpty()){
                                 mRecyclerView.setVisibility(View.INVISIBLE);
-                                StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
+                                img.setVisibility(View.VISIBLE);
+                                Toast.makeText(getApplicationContext(),"No Record",Toast.LENGTH_SHORT).show();
                             }else{
                                 mRecyclerView.setVisibility(View.VISIBLE);
+                                img.setVisibility(View.GONE);
                             }
                             SwipeRecyclerViewAdapter mAdapter = new SwipeRecyclerViewAdapter(Mainclass.this,mDataSet);
                             ((SwipeRecyclerViewAdapter) mAdapter).setMode(Attributes.Mode.Single);
@@ -278,6 +302,8 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             mDataSet.clear();
+                                            menu1.setVisible(true);
+                                            menu2.setVisible(true);
                                             progressDialog.dismiss();
                                             for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                                                 String date=snapshot.child("date").getValue(String.class);
@@ -292,9 +318,11 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
                                             }
                                             if(mDataSet.isEmpty()){
                                                 mRecyclerView.setVisibility(View.INVISIBLE);
-                                                StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
+                                                img.setVisibility(View.VISIBLE);
+                                                Toast.makeText(getApplicationContext(),"No Rcord",Toast.LENGTH_SHORT).show();
                                             }else{
                                                 mRecyclerView.setVisibility(View.VISIBLE);
+                                                img.setVisibility(View.GONE);
                                             }
                                             SwipeRecyclerViewAdapter mAdapter = new SwipeRecyclerViewAdapter(Mainclass.this,mDataSet);
                                             ((SwipeRecyclerViewAdapter) mAdapter).setMode(Attributes.Mode.Single);
@@ -319,6 +347,8 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
                                             mDataSet.clear();
+                                            menu1.setVisible(true);
+                                            menu2.setVisible(true);
                                             progressDialog.dismiss();
                                             for(DataSnapshot snapshot:dataSnapshot.getChildren()){
                                                 String date=snapshot.child("date").getValue(String.class);
@@ -333,8 +363,10 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
                                             }
                                             if(mDataSet.isEmpty()){
                                                 mRecyclerView.setVisibility(View.VISIBLE);
-                                                StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
+                                                img.setVisibility(View.VISIBLE);
+                                                Toast.makeText(getApplicationContext(),"No Record",Toast.LENGTH_SHORT).show();
                                             }else{
+                                                img.setVisibility(View.GONE);
                                                 mRecyclerView.setVisibility(View.VISIBLE);
                                             }
                                             SwipeRecyclerViewAdapter mAdapter = new SwipeRecyclerViewAdapter(Mainclass.this,mDataSet);
@@ -412,7 +444,7 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         swipeRefreshLayout.setRefreshing(true);
-        FirebaseDatabase.getInstance().getReference("TODO").orderByChild("mail").equalTo(mail)
+        FirebaseDatabase.getInstance().getReference("TODO").orderByChild("mail").equalTo(mail).orderByChild("date")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -441,9 +473,11 @@ public class Mainclass extends AppCompatActivity implements WaveSwipeRefreshLayo
                             }
                         }
                         if(mDataSet.isEmpty()){
+                            img.setVisibility(View.VISIBLE);
                             mRecyclerView.setVisibility(View.INVISIBLE);
-                            StyleableToast.makeText(getApplicationContext(), "No Record!", R.style.norecord).show();
+                            Toast.makeText(getApplicationContext(),"No Record",Toast.LENGTH_SHORT).show();
                         }else{
+                            img.setVisibility(View.GONE);
                             mRecyclerView.setVisibility(View.VISIBLE);
                         }
                         SwipeRecyclerViewAdapter mAdapter = new SwipeRecyclerViewAdapter(Mainclass.this,mDataSet);
